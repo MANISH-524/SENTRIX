@@ -1,0 +1,94 @@
+# =============================================================================
+# SENTRIX — Security CI Pipeline
+# =============================================================================
+# Runs on every push/PR and weekly:
+#   • tests           — full pytest suite incl. security regression tests
+#   • codeql          — GitHub SAST for Python + JavaScript (dashboard)
+#   • dependency-audit— pip-audit against the pinned lock file (known CVEs)
+#   • secret-scan     — gitleaks over the full git history
+#   • image-scan      — Trivy scan of both Docker images (OS + Python CVEs)
+# =============================================================================
+name: security
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"   # weekly Monday scan — catches newly published CVEs
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.lock
+      - name: Run test suite (incl. security regression tests)
+        env:
+          SENTRIX_ENV: development
+        run: pytest tests/ -q
+
+  codeql:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        language: [python, javascript]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v3
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pip-audit
+      - name: Audit pinned dependencies for known CVEs
+        run: pip-audit -r requirements.lock --strict
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history — secrets hide in old commits
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  image-scan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - dockerfile: Dockerfile.api
+            context: .
+          - dockerfile: Dockerfile.agent
+            context: .
+          - dockerfile: dashboard/Dockerfile
+            context: ./dashboard
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -f ${{ matrix.dockerfile }} -t sentrix-scan:$(basename ${{ matrix.dockerfile }}) ${{ matrix.context }}
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sentrix-scan:$(basename ${{ matrix.dockerfile }})
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+          ignore-unfixed: true
