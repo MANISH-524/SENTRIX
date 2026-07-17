@@ -9,15 +9,20 @@
 *"Sees the break before it happens. Reasons in real time. Never goes dark."*
 
 [![Version](https://img.shields.io/badge/version-4.1.0-3b82f6)](#-changelog)
+<<<<<<< HEAD
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/tests-80%20passing-brightgreen)](#)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+=======
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+>>>>>>> 97fc74eeed963a89e807b48050f54df99fec0d32
 [![FastAPI](https://img.shields.io/badge/FastAPI-async-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Real-time](https://img.shields.io/badge/ingestion-real--time-22d3ee)](#-real-time-mode-not-a-simulation)
 [![Runs Offline](https://img.shields.io/badge/runs-offline-success)](#-provider-agnostic-reasoning)
 [![Cost](https://img.shields.io/badge/cloud_cost-%240-brightgreen)](#)
 
+<<<<<<< HEAD
 **Every backup dashboard tells you your backups *succeeded*. None of them can tell you whether you can actually *recover*.**
 
 SENTRIX scores **provable recoverability** — and when it doesn't know, it schedules the restore test that finds out.
@@ -76,6 +81,11 @@ When confidence is low *because evidence is missing* (not because backups are fa
 <div align="center">
 
 [Quickstart](#-quickstart) · [The thesis (PS284.md)](PS284.md) · [Security model](SECURITY.md) · [Architecture](#-architecture) · [API](#-api-reference) · [Changelog](#-changelog)
+=======
+**An autonomous agent for IT backup & disaster-recovery readiness. It perceives a fleet in real time, reasons about each asset with a language model that actually owns its decisions, remembers what it decided last cycle, predicts breaches before they happen, acts, and explains every call — with a deterministic guardrail that enforces only the hard safety floors, so the AI stays free to reason but can never do harm.**
+
+[Quickstart](#-quickstart) · [What's new in v4](#-whats-new-in-v40--the-rebuild) · [Real-time mode](#-real-time-mode-not-a-simulation) · [Architecture](#-architecture) · [API](#-api-reference) · [Changelog](#-changelog)
+>>>>>>> 97fc74eeed963a89e807b48050f54df99fec0d32
 
 </div>
 
